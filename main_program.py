@@ -31,26 +31,18 @@ root.bind("<Button-1>", lambda e:root.destroy())
 root.bind("<Key>", lambda e:root.destroy())
 
 photo = PhotoImage(file='./pic.gif')
-#text1 = Text(root, height=33, width=70)
 text1 = Text(root, height = photo.height()/16, width = int(photo.width()/7.5))
-# text1.insert(END, '\n')
 text1.image_create(END, image=photo)
 text1.pack(side=TOP)
 
 x = font.families()
 
-# text2 = Text(root, height=6, width=70)
 text2 = Text(root, height = 4, width = int(photo.width()/7.5))
-text2.tag_configure('bold_italics', font=(x[3], 12, 'italic'))
+text2.tag_configure('italics', font=(x[7], 12, 'italic'))
 text2.tag_configure('big', font=(x[23], 25, 'bold'))
-text2.tag_configure('color', foreground='#476042',
-                    font=(x[0], 10, 'bold'))
-text2.tag_bind('follow', '<1>', lambda e, t=text2: t.insert(END, "N!"))
 text2.insert(END, '\t SAIL PRODUCT INFORMATION', 'big')
-text2.insert(END, '\n\t\t\t\t Press any key to continue...', 'bold_italics')
-text2.insert(END, '\n', 'follow')
+text2.insert(END, '\n\t\t\t\t Press any key to continue...', 'italics')
 text2.pack(side=LEFT)
-
 
 file = open_excel_file()
 if file == ERROR_FILE_NOT_FOUND:
@@ -66,45 +58,34 @@ def get_range_list(param):
     return list1
 
 
-def product_exists(product_name1):
-    file = open_excel_file()
-    if file == ERROR_FILE_NOT_FOUND:
+def get_index_if_product_exists(product_name1):
+    file1 = open_excel_file()
+    if file1 == ERROR_FILE_NOT_FOUND:
         return ERROR_FILE_NOT_FOUND
-    number_of_products = file.sheet_by_index(0).nrows
+    number_of_products = file1.sheet_by_index(0).nrows
     if number_of_products <= 0:
         return ERROR_PRODUCT_NOT_FOUND
-    sheet = file.sheet_by_index(0)
+    sheet = file1.sheet_by_index(0)
     for i in range(number_of_products):
         if product_name1.lower() == sheet.cell(i,0).value.lower():
             return i
     return ERROR_PRODUCT_NOT_FOUND
 
 
-
-
 class Application(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.new_product = BooleanVar()
-        self.product_uses = BooleanVar()
-        self.product_description = BooleanVar()
-        self.product_content = BooleanVar()
-        self.text = Text(self, width=36, height=2, wrap=WORD)
-        self.search_button = Button(self, text="Search", height=1, width=40, command=self.search_product)
-        self.product_name = Entry(self, bd=2, width=22)
-        self.instruction = Label(self, text="Enter Product Name:")
-
         self.grid()
-        self.create_widgets()
-
-    def create_widgets(self):
+        self.instruction = Label(self, text="Enter Product Name:")
         self.instruction.grid(row=0, column=0, columnspan=2, sticky=W)
-
+        self.product_name = Entry(self, bd=2, width=22)
         self.product_name.grid(row=0, column=1, sticky=W)
-        self.product_name.bind("<Return>", lambda e:self.search_product())
+        self.product_name.bind("<Return>", lambda e: self.search_product())
 
+        self.search_button = Button(self, text="Search", height=1, width=40, command=self.search_product)
         self.search_button.grid(row=1, column=0, columnspan=2, sticky=W)
 
+        self.text = Text(self, width=36, height=2, wrap=WORD)
         self.text.grid(row=3, column=0, columnspan=2, sticky=W)
 
         Label(self, height=1, width=40).grid(row=4, column=0, columnspan=2)
@@ -140,7 +121,7 @@ class Application(Frame):
         if product_name1 == "":
             self.display_message("Please enter product name!")
         else:
-            result = product_exists(product_name1)
+            result = get_index_if_product_exists(product_name1)
             if result == ERROR_FILE_NOT_FOUND:
                 self.display_message("Sorry, database error. Kindly restart the app.")
             elif result == ERROR_PRODUCT_NOT_FOUND:
@@ -154,7 +135,7 @@ class Application(Frame):
             self.display_message("Please enter product name!")
             return
         else:
-            result = product_exists(product_name1)
+            result = get_index_if_product_exists(product_name1)
             if result == ERROR_FILE_NOT_FOUND:
                 self.display_message("Sorry, database error. Kindly restart the app.")
                 return
@@ -162,11 +143,11 @@ class Application(Frame):
                 self.display_message("Sorry, product not in database.")
                 return
 
-        file = open_excel_file()
-        sheet = file.sheet_by_index(0)
+        file1 = open_excel_file()
+        sheet = file1.sheet_by_index(0)
         raw_data = sheet.cell(result, 1).value
         if len(raw_data)==0:
-            self.display_message("Product content not found.")
+            self.display_message("Product contents not found.")
             return
         raw_data = raw_data.split(";")
         materials = []
@@ -201,7 +182,7 @@ class Application(Frame):
             self.display_message("Please enter product name!")
             return
         else:
-            result = product_exists(product_name1)
+            result = get_index_if_product_exists(product_name1)
             if result == ERROR_FILE_NOT_FOUND:
                 self.display_message("Sorry, database error. Kindly restart the app.")
                 return
@@ -249,7 +230,7 @@ class Application(Frame):
             self.display_message("Please enter product name!")
             return
         else:
-            result = product_exists(product_name1)
+            result = get_index_if_product_exists(product_name1)
             if result == ERROR_FILE_NOT_FOUND:
                 self.display_message("Sorry, database error. Kindly restart the app.")
                 return
@@ -357,7 +338,7 @@ class Application(Frame):
                 if len(product_name)==0:
                     self.show_message("Enter product name!")
                     return
-                if product_exists(product_name)>=0:
+                if get_index_if_product_exists(product_name)>=0:
                     self.show_message("Product already exists!")
                     return 
                 contents = self.contents.get(0.0, END).strip().replace("\n", "")
