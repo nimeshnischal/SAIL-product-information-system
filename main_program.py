@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import font
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plt
 from xlutils.copy import copy
 from xlrd import open_workbook
 from xlwt import Workbook
@@ -181,19 +181,19 @@ class Application(Frame):
             return
 
         x = get_range_list(len(materials))
-        plot.axis([-1, len(materials), 0, 100])
-        plot.xticks(x, materials)
-        plot.plot(x, quantities, 'ro')
-        plot.grid(True)
+        plt.axis([-1, len(materials), 0, 100])
+        plt.xticks(x, materials)
+        plt.plot(x, quantities, 'ro')
+        plt.grid(True)
 
         for i in range(len(quantities)):
-            plot.annotate(quantities[i], xy=(i, quantities[i]),
-                          xytext=(i+0.05, quantities[i]+ 1)
-                          )
+            plt.annotate(quantities[i], xy=(i, quantities[i]),
+                         xytext=(i+0.05, quantities[i]+ 1)
+                         )
 
-        plot.ylabel('Constituent %')
-        plot.xlabel('Materials')
-        plot.show()
+        plt.ylabel('Constituent %')
+        plt.xlabel('Materials')
+        plt.show()
 
     def show_product_description(self):
         product_name1 = self.product_name.get().strip()
